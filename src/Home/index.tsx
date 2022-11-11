@@ -10,6 +10,7 @@ import { styles } from './styles';
 import { POSITIONS, PositionProps } from '../utils/positions';
 
 export function Home() {
+  const [photo,setPhotoURI] = useState<null|string>(null);
   const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const [positionSelected, setPositionSelected] = useState<PositionProps>(POSITIONS[0]);
 
@@ -17,7 +18,7 @@ export function Home() {
 
   async function handleTakePicture(){
     const photo = await cameraRef.current.takePictureAsync();
-    console.log(photo);
+    setPhotoURI(photo.uri);
   }
 
   useEffect(()=>{
@@ -32,13 +33,13 @@ export function Home() {
 
           <View style={styles.picture}>
 
-          {hasCameraPermission ? 
+          {hasCameraPermission || !photo ? 
             <Camera 
               ref={cameraRef}
               style={styles.camera}
               type={CameraType.front}
             /> :
-            <Image source={{ uri: 'https://assets.zoom.us/images/en-us/desktop/generic/video-not-working.PNG' }} style={styles.camera} />
+            <Image source={{ uri: photo ? photo : 'https://assets.zoom.us/images/en-us/desktop/generic/video-not-working.PNG' }} style={styles.camera} />
           }
             <View style={styles.player}>
               <TextInput
