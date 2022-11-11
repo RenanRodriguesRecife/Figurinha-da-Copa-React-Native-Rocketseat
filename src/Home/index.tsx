@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Camera, CameraType } from 'expo-camera';
-import { Image, SafeAreaView, ScrollView, TextInput, View } from 'react-native';
+import { Image, SafeAreaView, ScrollView, TextInput, View, Text, Touchable, TouchableOpacity } from 'react-native';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 
 import { Header } from '../components/Header';
 import { Button } from '../components/Button';
@@ -15,10 +17,16 @@ export function Home() {
   const [positionSelected, setPositionSelected] = useState<PositionProps>(POSITIONS[0]);
 
   const cameraRef = useRef<Camera>(null);
+  const screenShotRef = useRef(null);
 
   async function handleTakePicture(){
     const photo = await cameraRef.current.takePictureAsync();
     setPhotoURI(photo.uri);
+  }
+
+  async function shareScreenShot() {
+    const screenshot = await captureRef(screenShotRef);
+    await Sharing.shareAsync("file://" + screenshot)
   }
 
   useEffect(()=>{
@@ -28,7 +36,7 @@ export function Home() {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        <View>
+        <View ref={screenShotRef} style={styles.sticker}>
           <Header position={positionSelected} />
 
           <View style={styles.picture}>
@@ -39,7 +47,10 @@ export function Home() {
               style={styles.camera}
               type={CameraType.front}
             /> :
-            <Image source={{ uri: photo ? photo : 'https://assets.zoom.us/images/en-us/desktop/generic/video-not-working.PNG' }} style={styles.camera} />
+            <Image source={{ 
+              uri: photo ? photo : 'https://assets.zoom.us/images/en-us/desktop/generic/video-not-working.PNG' }} 
+              style={styles.camera}
+              onLoad={shareScreenShot} />
           }
             <View style={styles.player}>
               <TextInput
@@ -54,6 +65,12 @@ export function Home() {
           onChangePosition={setPositionSelected}
           positionSelected={positionSelected}
         />
+
+        <TouchableOpacity onPress={()=>setPhotoURI(null)}>
+          <Text style={styles.retry}>
+            Nova Foto
+          </Text>
+        </TouchableOpacity>
 
         <Button title="Compartilhar" onPress={handleTakePicture}/>
       </ScrollView>
