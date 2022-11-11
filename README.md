@@ -3,7 +3,7 @@
 Rocketseat - 2022
 
 - Tópicos
-  - Utilizar câmera do dispositivo
+  - Utilizar câmera do dispositivo (expo-camera)
   - Obter Screenshot
   - Compartilahr imagem
   
