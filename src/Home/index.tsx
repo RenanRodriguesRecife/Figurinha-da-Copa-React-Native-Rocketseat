@@ -33,7 +33,7 @@ export function Home() {
 
           <View style={styles.picture}>
 
-          {hasCameraPermission || !photo ? 
+          {hasCameraPermission && !photo ? 
             <Camera 
               ref={cameraRef}
               style={styles.camera}
