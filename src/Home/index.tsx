@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Camera } from 'expo-camera';
 import { Image, SafeAreaView, ScrollView, TextInput, View } from 'react-native';
 
 import { Header } from '../components/Header';
@@ -9,7 +10,12 @@ import { styles } from './styles';
 import { POSITIONS, PositionProps } from '../utils/positions';
 
 export function Home() {
+  const [hasCameraPermission, setHasCameraPermission] = useState(false);
   const [positionSelected, setPositionSelected] = useState<PositionProps>(POSITIONS[0]);
+
+  useEffect(()=>{
+    Camera.requestCameraPermissionsAsync().then(response => setHasCameraPermission(response.granted))
+  },[]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -19,8 +25,9 @@ export function Home() {
 
           <View style={styles.picture}>
 
-            <Image source={{ uri: 'https://github.com/rodrigorgtic.png' }} style={styles.camera} />
-
+          {hasCameraPermission ? <Camera style={styles.camera}/> :
+            <Image source={{ uri: 'https://assets.zoom.us/images/en-us/desktop/generic/video-not-working.PNG' }} style={styles.camera} />
+          }
             <View style={styles.player}>
               <TextInput
                 placeholder="Digite seu nome aqui"
